@@ -6,13 +6,13 @@
 }
 
 :root {
-  --background: #0f172a; /* slate-900 */
-  --foreground: #f8fafc; /* slate-50 */
+  --background: #0B0F19; /* Deep navy background from screenshots */
+  --foreground: #f8fafc;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020617; /* slate-950 */
+    --background: #0B0F19;
     --foreground: #f8fafc;
   }
 }
@@ -22,6 +22,8 @@ body {
   background: var(--background);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 /* Glassmorphism utilities */

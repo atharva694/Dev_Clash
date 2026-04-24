@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generated App</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.highlight-high {
+  background-color: rgba(239, 68, 68, 0.25);
+  border-bottom: 2px solid rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+  font-weight: 600;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+.highlight-medium {
+  background-color: rgba(245, 158, 11, 0.25);
+  border-bottom: 2px solid rgba(245, 158, 11, 0.6);
+  color: #fcd34d;
+  font-weight: 500;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+  </style>
+</head>
+<body>
+<div class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30">
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <header class="mb-12 text-center">
+      <div class="inline-flex items-center justify-center p-3 mb-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold tracking-tight text-white mb-2">Sentinel Spam Detector</h1>
+      <p class="text-slate-400">Analyze email content for potential security threats and marketing spam.</p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-8">
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <label class="text-sm font-semibold uppercase tracking-wider text-slate-500">Email Content</label>
+          <div class="flex gap-2">
+            <button id="clearBtn" class="text-xs text-slate-400 hover:text-white transition-colors">Clear All</button>
+            <label class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer">
+              Upload File <input type="file" id="fileInput" class="hidden" accept=".txt,.eml" />
+            </label>
+          </div>
+        </div>
+        <textarea id="emailInput" class="w-full h-64 bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none placeholder:text-slate-600" placeholder="Paste the email content here... (e.g., 'CONGRATULATIONS! You won a $1000 gift card, click here now!')"></textarea>
+        <button id="analyzeBtn" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]">
+          Scan Message
+        </button>
+      </div>
+
+      <div id="resultsSection" class="hidden opacity-0 transform translate-y-4 transition-all duration-500">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+            <div class="relative flex items-center justify-center w-32 h-32 mb-4">
+              <svg class="w-full h-full -rotate-90">
+                <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" class="text-slate-800" />
+                <circle id="scoreCircle" cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" stroke-dasharray="364.4" stroke-dashoffset="364.4" class="text-indigo-500 transition-all duration-1000" />
+              </svg>
+              <span id="scoreValue" class="absolute text-3xl font-bold text-white">0%</span>
+            </div>
+            <p class="text-sm font-medium text-slate-400">Spam Probability</p>
+            <p id="verdictLabel" class="mt-2 font-bold text-lg"></p>
+          </div>
+
+          <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Analyzed Findings</h3>
+            <div id="highlightedOutput" class="p-4 bg-slate-950/50 rounded-xl border border-slate-800 leading-relaxed text-slate-300 min-h-[150px] max-h-[300px] overflow-auto whitespace-pre-wrap"></div>
+            <div class="mt-4 flex gap-4 text-xs">
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> High Risk</div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Warning</div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Clean</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script>
+const spamKeywords = {
+  'congratulations': 0.8, 'winner': 0.9, 'urgent': 0.7, 'act now': 0.9, 'gift card': 0.8, 
+  'click here': 0.85, 'guaranteed': 0.6, 'lottery': 1.0, 'prize': 0.7, 'bonus': 0.6,
+  'exclusive offer': 0.7, 'limited time': 0.5, 'cash': 0.6, 'earn money': 0.9,
+  'verify your account': 0.95, 'suspended': 0.8, 'debt': 0.7, 'investment': 0.6,
+  'crypto': 0.5, 'million dollars': 0.9, 'inheritance': 1.0, 'won': 0.7,
+  'free': 0.4, 'viagra': 1.0, 'pharmacy': 0.8, 'no cost': 0.6, 'bank': 0.3,
+  'claim': 0.7, 'password': 0.5, 'security alert': 0.6, 'login': 0.4,
+  'billing': 0.4, 'overdue': 0.6, 'refund': 0.7, 'unsubscribe': 0.2
+};
+
+const inputArea = document.getElementById('emailInput');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const resultsSection = document.getElementById('resultsSection');
+const highlightedOutput = document.getElementById('highlightedOutput');
+const scoreValue = document.getElementById('scoreValue');
+const scoreCircle = document.getElementById('scoreCircle');
+const verdictLabel = document.getElementById('verdictLabel');
+const fileInput = document.getElementById('fileInput');
+const clearBtn = document.getElementById('clearBtn');
+
+function analyzeSpam() {
+  const text = inputArea.value.trim();
+  if (!text) return;
+
+  let score = 0;
+  const sortedKeys = Object.keys(spamKeywords).sort((a, b) => b.length - a.length);
+  
+  sortedKeys.forEach(keyword => {
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+    const matches = text.match(regex);
+    if (matches) {
+      score += matches.length * spamKeywords[keyword];
+    }
+  });
+
+  // Calculate probability
+  let probability = Math.min(Math.round((score / 4) * 100), 100);
+  if (text.length < 30 && probability > 0) probability = Math.min(probability + 15, 100);
+  
+  resultsSection.classList.remove('hidden');
+  setTimeout(() => {
+    resultsSection.classList.remove('opacity-0', 'translate-y-4');
+  }, 50);
+
+  updateGauge(probability);
+  renderHighlights(text, sortedKeys);
+}
+
+function updateGauge(percent) {
+  const radius = 58;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
+  
+  scoreCircle.style.strokeDashoffset = offset;
+  scoreValue.innerText = `${percent}%`;
+
+  // Clear existing color classes
+  scoreCircle.classList.remove('text-indigo-500', 'text-red-500', 'text-amber-500', 'text-emerald-500');
+
+  if (percent > 70) {
+    verdictLabel.innerText = 'High Risk';
+    verdictLabel.className = 'mt-2 font-bold text-lg text-red-500';
+    scoreCircle.classList.add('text-red-500');
+  } else if (percent > 30) {
+    verdictLabel.innerText = 'Suspicious';
+    verdictLabel.className = 'mt-2 font-bold text-lg text-amber-500';
+    scoreCircle.classList.add('text-amber-500');
+  } else {
+    verdictLabel.innerText = 'Likely Safe';
+    verdictLabel.className = 'mt-2 font-bold text-lg text-emerald-500';
+    scoreCircle.classList.add('text-emerald-500');
+  }
+}
+
+function renderHighlights(text, keys) {
+  // Escape HTML first to prevent XSS
+  let html = text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  
+  // Construct a single regex to avoid overlapping replacements
+  const escapedKeys = keys.map(k => k.replace(/[.*+?^${}()|[\\\\]]/g, '\\$&')).join('|');
+  const regex = new RegExp(`\\b(${escapedKeys})\\b`, 'gi');
+
+  html = html.replace(regex, (match) => {
+    const keyword = match.toLowerCase();
+    const weight = spamKeywords[keyword] || 0.5;
+    const cssClass = weight > 0.7 ? 'highlight-high' : 'highlight-medium';
+    return `<span class="${cssClass}">${match}</span>`;
+  });
+
+  highlightedOutput.innerHTML = html;
+}
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    inputArea.value = e.target.result;
+    analyzeSpam();
+  };
+  reader.readAsText(file);
+});
+
+clearBtn.addEventListener('click', () => {
+  inputArea.value = '';
+  resultsSection.classList.add('hidden', 'opacity-0', 'translate-y-4');
+});
+
+analyzeBtn.addEventListener('click', analyzeSpam);
+  </script>
+</body>
+</html>
