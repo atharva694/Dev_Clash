@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from agents.optimizer import optimize_prompt
 from agents.coder import generate_code
 from agents.critic import review_code
 
@@ -27,23 +26,20 @@ def generate(req: GenerateRequest):
         raise HTTPException(status_code=400, detail="Prompt is required")
 
     try:
-        # Step 1: Optimize the user's raw prompt
+        # Step 1: Coder Agent generates optimized prompt AND initial code in one request
         print("=" * 60)
-        print("Step 1: Optimizing prompt...")
-        optimized_prompt = optimize_prompt(req.prompt)
-        print(f"Optimized: {optimized_prompt[:120]}...")
+        print("Step 1: Coder Agent — optimizing prompt & generating initial code...")
+        current_code = generate_code(req.prompt)
+        
+        # Extract the optimized prompt from the response
+        optimized_prompt = current_code.get("optimized_prompt", req.prompt)
 
-        # Step 2: Coder generates initial code
-        print("-" * 60)
-        print("Step 2: Coder Agent — generating initial code...")
-        current_code = generate_code(optimized_prompt)
-
-        # Step 3: Iterative Coder-Critic refinement loop
+        # Step 2: Iterative Coder-Critic refinement loop
         review_log = []
 
         for iteration in range(1, MAX_ITERATIONS + 1):
             print("-" * 60)
-            print(f"Step 3.{iteration}: Critic Agent — reviewing (round {iteration}/{MAX_ITERATIONS})...")
+            print(f"Step 2.{iteration}: Critic Agent — reviewing (round {iteration}/{MAX_ITERATIONS})...")
 
             review = review_code(current_code, iteration)
             approved = review.get("approved", True)

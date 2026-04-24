@@ -30,9 +30,9 @@ def review_code(code: dict, iteration: int) -> dict:
     try:
         prompt = f"Review this code:\n\n{json.dumps(code)}"
 
-        def _operation(client: genai.Client):
+        def _operation(client: genai.Client, model_name: str):
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model=model_name,
                 contents=prompt,
                 config={
                     "system_instruction": system_prompt,
