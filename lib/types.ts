@@ -17,4 +17,4 @@ export interface GenerateResponse {
   total_iterations?: number;
 }
 
-export type AppState = 'idle' | 'loading' | 'success' | 'error';
+export type AppState = 'idle' | 'clarifying' | 'loading' | 'success' | 'error';

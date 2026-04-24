@@ -7,17 +7,57 @@ import { PromptInput } from "@/components/PromptInput";
 import { LivePreview } from "@/components/LivePreview";
 import { CodeView } from "@/components/CodeView";
 import { DownloadButton } from "@/components/DownloadButton";
+import { Questionnaire } from "@/components/Questionnaire";
 import { AlertCircle, RefreshCcw, Sparkles, CheckCircle2, XCircle, SearchCode } from "lucide-react";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("idle");
   const [result, setResult] = useState<GenerateResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [originalPrompt, setOriginalPrompt] = useState<string>("");
+
+  const handleInitialSubmit = async (prompt: string) => {
+    setState("loading");
+    setError(null);
+    setResult(null);
+    setOriginalPrompt(prompt);
+
+    try {
+      const res = await fetch("/api/clarify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Server returned invalid response: ${text.substring(0, 200)}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.detail || data.error || "Failed to clarify prompt");
+      }
+
+      if (data.questions && data.questions.length > 0) {
+        setQuestions(data.questions);
+        setState("clarifying");
+      } else {
+        // No questions needed, just generate
+        handleGenerate(prompt);
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error — is the backend running?");
+      setState("error");
+    }
+  };
 
   const handleGenerate = async (prompt: string) => {
     setState("loading");
     setError(null);
-    setResult(null);
 
     try {
       const res = await fetch("/api/generate", {
@@ -55,11 +95,32 @@ export default function Home() {
         {/* Background glow effect */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-        {state === "idle" || state === "loading" ? (
+        {state === "idle" || (state === "loading" && questions.length === 0) ? (
           <div className="flex-1 flex items-center justify-center -mt-20">
-            <PromptInput onSubmit={handleGenerate} isLoading={state === "loading"} />
+            <PromptInput onSubmit={handleInitialSubmit} isLoading={state === "loading"} />
           </div>
         ) : null}
+
+        {state === "clarifying" && (
+          <div className="flex-1 flex items-center justify-center -mt-20">
+            <Questionnaire 
+              questions={questions} 
+              onComplete={(answers) => {
+                const combinedPrompt = `${originalPrompt}\n\nUser's clarifications:\n${Object.entries(answers).map(([q, a]) => `- ${q}\n  ${a}`).join("\n")}`;
+                handleGenerate(combinedPrompt);
+              }} 
+            />
+          </div>
+        )}
+
+        {(state === "loading" && questions.length > 0) && (
+           <div className="flex-1 flex items-center justify-center -mt-20">
+              <div className="glass-panel p-8 rounded-3xl flex flex-col items-center gap-4">
+                <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-slate-300 font-medium">Generating your app based on answers...</p>
+              </div>
+           </div>
+        )}
 
         {state === "error" && (
           <div className="flex-1 flex flex-col items-center justify-center gap-6 z-10">
