@@ -18,37 +18,12 @@ def generate_code(prompt: str, feedback: str = None, previous_code: dict = None)
     """
     if feedback and previous_code:
         # Refinement mode: Coder gets the previous code + critic's feedback
-        system_prompt = """You are an elite frontend developer refining a web application based on reviewer feedback.
-You have been given the previous version of the code and specific feedback from a code reviewer.
+        system_prompt = "You are a UI developer refining code based on feedback. Keep what works, fix ALL issues mentioned. Output ONLY JSON with keys: html_content (must include tailwind CDN), css_content, js_content. Complete code only, no placeholders."
 
-Your job is to:
-1. Carefully read the feedback and fix ALL issues mentioned.
-2. Keep everything that was already working correctly.
-3. Improve the code based on the feedback.
-4. Output ONLY valid JSON with keys: html_content, css_content, js_content.
-
-The HTML must include <script src="https://cdn.tailwindcss.com"></script> in the <head>.
-Write complete, functional code. No placeholders. No commentary."""
-
-        contents = f"""PREVIOUS CODE:
-{json.dumps(previous_code, indent=2)}
-
-REVIEWER FEEDBACK:
-{feedback}
-
-Fix all issues mentioned above and return the improved code as JSON."""
+        contents = f"PREVIOUS CODE:\n{json.dumps(previous_code)}\n\nFEEDBACK:\n{feedback}"
     else:
         # First pass: generate from scratch
-        system_prompt = """You are an elite frontend developer building a web application based on a user's prompt.
-You must output ONLY valid JSON containing the following exactly three keys:
-- html_content: The HTML code. It must include <script src="https://cdn.tailwindcss.com"></script> in the <head>.
-- css_content: The custom CSS code (excluding Tailwind utility classes used in HTML).
-- js_content: The custom JavaScript code.
-
-Write complete, functional, and fully implemented code. Do not use placeholders like "// add logic here".
-Prioritize speed, clean UI (dark mode with Tailwind), and immediate execution.
-
-Output ONLY valid JSON. No markdown fences, no commentary."""
+        system_prompt = "You are a UI developer. Output ONLY valid JSON with keys: html_content (must include tailwind CDN), css_content, js_content. Code must be complete, functional, modern, and dark-themed. No placeholders."
         contents = prompt
 
     def _operation(client: genai.Client):

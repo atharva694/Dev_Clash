@@ -3,20 +3,7 @@ from agents.client import with_key_rotation
 
 
 def optimize_prompt(raw_prompt: str) -> str:
-    system_prompt = """You are an elite product manager and UX designer. Your job is to take a vague, minimal app idea from a user and transform it into a detailed, actionable product specification for a frontend developer.
-
-Your output must be a single, detailed paragraph (NOT JSON, just plain text) that describes:
-
-1. **App Name**: A catchy, professional name for the app.
-2. **Core Features**: 3-5 specific, well-defined features the app must have.
-3. **UI/UX Details**: Describe the layout, color scheme (prefer dark mode with modern gradients), typography, and visual style. Mention specific UI patterns like cards, modals, sidebars, tabs, etc.
-4. **Interactions**: Describe animations, hover effects, transitions, and micro-interactions that make the app feel premium.
-5. **Data & State**: What data does the app manage? How does state flow? What happens on user actions?
-6. **Edge Cases**: Mention empty states, error states, loading states, and validation.
-
-Transform even the simplest idea into a rich, fully-fledged product concept. Think like you're writing a brief for a senior developer at a top tech company.
-
-IMPORTANT: Your output is plain text only. Do NOT output JSON. Do NOT use markdown fences. Just write the enhanced prompt as a detailed paragraph."""
+    system_prompt = "Act as a PM. Expand the user's brief idea into a 1-paragraph technical spec covering: App Name, 3-4 core features, UI/UX (dark mode, layout), and state logic. Plain text only, no markdown."
 
     def _operation(client: genai.Client):
         response = client.models.generate_content(

@@ -25,35 +25,10 @@ def review_code(code: dict, iteration: int) -> dict:
     - If approved: returns the (possibly fixed) code with approved=True
     - If rejected: returns feedback for the Coder with approved=False
     """
-    system_prompt = f"""You are an elite code reviewer and QA engineer. This is review round {iteration}.
-You have received generated code for a web app (HTML, CSS, JS).
-
-Your job is to carefully review the code and return a JSON object with these keys:
-
-1. "approved" (boolean): Set to true ONLY if the code is production-ready with:
-   - Zero syntax errors in HTML, CSS, and JS
-   - Functional UI that renders correctly
-   - All features mentioned in the code actually work
-   - Clean, modern dark-mode styling
-   - No placeholder text, dummy handlers, or incomplete logic
-   Set to false if ANY of the above checks fail.
-
-2. "feedback" (string): If approved is false, write specific, actionable feedback describing:
-   - Exact syntax errors found (with line context)
-   - Missing functionality or broken features
-   - UI/UX issues
-   - What needs to be fixed
-   If approved is true, write "Code is production-ready. All checks passed."
-
-3. "fixed_html_content" (string): The corrected HTML code (or original if no fix needed)
-4. "fixed_css_content" (string): The corrected CSS code (or original if no fix needed)
-5. "fixed_js_content" (string): The corrected JS code (or original if no fix needed)
-
-Be thorough but practical. Fix minor issues yourself in the fixed_ fields.
-Only reject (approved=false) for significant issues that affect functionality."""
+    system_prompt = f"Review this code (round {iteration}). Output JSON with:\n1. 'approved': true ONLY if zero syntax errors, fully functional UI, complete logic, no placeholders.\n2. 'feedback': specific fixes needed, or 'All passed'.\n3. 'fixed_html_content', 'fixed_css_content', 'fixed_js_content': correct minor issues yourself."
 
     try:
-        prompt = f"Review this code (round {iteration}):\n\n{json.dumps(code, indent=2)}"
+        prompt = f"Review this code:\n\n{json.dumps(code)}"
 
         def _operation(client: genai.Client):
             response = client.models.generate_content(
