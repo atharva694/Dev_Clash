@@ -151,6 +151,13 @@ class GenerateRequest(BaseModel):
 class ClarifyRequest(BaseModel):
     prompt: str
 
+class RefineRequest(BaseModel):
+    feedback: str
+    html_content: str
+    css_content: str
+    js_content: str
+    optimized_prompt: str
+
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/")
@@ -265,6 +272,108 @@ def generate(req: GenerateRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/refine")
+def refine(req: RefineRequest):
+    if not req.feedback:
+        raise HTTPException(status_code=400, detail="Feedback is required")
+
+    try:
+        app_id = str(uuid.uuid4())[:8]
+        print("=" * 60)
+        print(f"[{app_id}] Step 1: Coder Agent — refining code based on user feedback...")
+        
+        previous_code = {
+            "html_content": req.html_content,
+            "css_content": req.css_content,
+            "js_content": req.js_content
+        }
+
+        current_code = generate_code(
+            prompt=req.optimized_prompt, 
+            feedback=req.feedback, 
+            previous_code=previous_code
+        )
+        
+        optimized_prompt = req.optimized_prompt
+
+        # ── Step 2: Critic ────────────────────────────────────────────────────
+        review_log = []
+        for iteration in range(1, MAX_ITERATIONS + 1):
+            print(f"[{app_id}] Step 2.{iteration}: Critic Agent — reviewing (round {iteration}/{MAX_ITERATIONS})...")
+            review = review_code(current_code, iteration)
+            approved = review.get("approved", True)
+            feedback = review.get("feedback", "")
+
+            review_log.append({
+                "round": iteration,
+                "approved": approved,
+                "feedback": feedback,
+            })
+
+            current_code = {
+                "html_content": review.get("fixed_html_content", current_code.get("html_content", "")),
+                "css_content":  review.get("fixed_css_content",  current_code.get("css_content", "")),
+                "js_content":   review.get("fixed_js_content",   current_code.get("js_content", "")),
+            }
+
+            if approved:
+                print(f"[{app_id}] ✅ Critic APPROVED on round {iteration}!")
+                break
+            else:
+                print(f"[{app_id}] ❌ Critic rejected: {feedback[:100]}...")
+                if iteration < MAX_ITERATIONS:
+                    current_code = generate_code(
+                        prompt=optimized_prompt,
+                        feedback=feedback,
+                        previous_code=current_code,
+                    )
+                else:
+                    print(f"[{app_id}] ⚠️  Max iterations reached. Using critic's fixed code.")
+
+        html = current_code.get("html_content", "")
+        css  = current_code.get("css_content", "")
+        js   = current_code.get("js_content", "")
+
+        # ── Step 3: Save frontend + live URL ──────────────────────────────────
+        live_url = save_frontend(app_id, html, css, js)
+
+        # ── Step 4: Architect generates backend ───────────────────────────────
+        print(f"[{app_id}] Step 3: Architect Agent — generating backend...")
+        backend = generate_backend(
+            optimized_prompt=optimized_prompt,
+            html_content=html,
+            js_content=js,
+        )
+
+        # ── Step 5: Build ZIP ─────────────────────────────────────────────────
+        print(f"[{app_id}] Step 4: Building project.zip...")
+        download_url = build_zip(app_id, html, css, js, backend)
+
+        print("=" * 60)
+        print(f"[{app_id}] Done! Total API calls: {1 + len(review_log) + 1}")
+
+        return {
+            **current_code,
+            "optimized_prompt":     optimized_prompt,
+            "review_log":           review_log,
+            "total_iterations":     len(review_log),
+            "app_id":               app_id,
+            "live_url":             live_url,
+            "download_url":         download_url,
+            "backend_main":         backend.get("backend_main", ""),
+            "backend_models":       backend.get("backend_models", ""),
+            "backend_requirements": backend.get("backend_requirements", ""),
+            "setup_instructions":   backend.get("setup_instructions", ""),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] {str(e)}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── Direct ZIP download route ─────────────────────────────────────────────────
 @app.get("/api/download/{app_id}")
 def download(app_id: str):
@@ -276,3 +385,17 @@ def download(app_id: str):
         media_type="application/zip",
         filename=f"project-{app_id}.zip",
     )
+
+# ── List Projects route ───────────────────────────────────────────────────────
+@app.get("/api/projects")
+def list_projects():
+    projects = []
+    if GENERATED_DIR.exists():
+        for d in GENERATED_DIR.iterdir():
+            if d.is_dir() and (d / "index.html").exists():
+                projects.append({
+                    "id": d.name,
+                    "url": f"{get_base_url()}/generated/{d.name}/index.html",
+                    "download_url": f"{get_base_url()}/zips/{d.name}.zip"
+                })
+    return {"projects": projects}
