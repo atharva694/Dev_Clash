@@ -2,13 +2,17 @@ import uuid
 import os
 import zipfile
 import traceback
+import base64
+import tempfile
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+
+from agents.client import with_key_rotation
 
 from agents.coder import generate_code
 from agents.critic import review_code
@@ -398,4 +402,63 @@ def list_projects():
                     "url": f"{get_base_url()}/generated/{d.name}/index.html",
                     "download_url": f"{get_base_url()}/zips/{d.name}.zip"
                 })
-    return {"projects": projects}
+    return {"projects": projects}
+
+
+# ── Speech-to-Text route ──────────────────────────────────────────────────────
+@app.post("/api/transcribe")
+async def transcribe_audio(audio: UploadFile = File(...)):
+    """Receives audio from the browser MediaRecorder and uses Gemini to transcribe it."""
+    try:
+        audio_bytes = await audio.read()
+        if len(audio_bytes) < 100:
+            raise HTTPException(status_code=400, detail="Audio too short")
+
+        # Detect mime type
+        content_type = audio.content_type or "audio/webm"
+        if "webm" in content_type:
+            mime = "audio/webm"
+        elif "ogg" in content_type:
+            mime = "audio/ogg"
+        elif "wav" in content_type:
+            mime = "audio/wav"
+        else:
+            mime = "audio/webm"
+
+        # Encode as base64 for inline Gemini request (no file upload needed)
+        audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
+
+        def do_transcribe(client, model_name):
+            from google.genai import types as genai_types
+            response = client.models.generate_content(
+                model=model_name,
+                contents=[
+                    genai_types.Content(
+                        parts=[
+                            genai_types.Part(text=(
+                                "Transcribe the following audio exactly as spoken. "
+                                "Return ONLY the raw transcription text, nothing else. "
+                                "No quotes, no labels, no explanations."
+                            )),
+                            genai_types.Part(
+                                inline_data=genai_types.Blob(
+                                    mime_type=mime,
+                                    data=audio_b64,
+                                )
+                            ),
+                        ]
+                    )
+                ],
+            )
+            return response.text.strip()
+
+        transcript = with_key_rotation(do_transcribe)
+        print(f"🎤 Transcribed: {transcript[:80]}")
+        return {"transcript": transcript}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[TRANSCRIBE ERROR] {str(e)}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))

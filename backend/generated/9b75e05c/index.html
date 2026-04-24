@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prem Jha | Backend Developer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains+Mono', monospace; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
+<style>
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+#home img {
+  animation: float 6s ease-in-out infinite;
+}
+
+#typing::after {
+  content: '|';
+  animation: blink 0.7s infinite;
+  margin-left: 2px;
+  color: #34d399;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.glass {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+}
+
+.glass:hover {
+  transform: translateY(-5px) scale(1.01);
+}
+</style>
+</head>
+<body class="bg-slate-950 text-slate-200 overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-emerald-400 font-bold text-xl tracking-tighter italic">PJ.</div>
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <a href="#home" class="hover:text-emerald-400 transition-colors">Home</a>
+                <a href="#skills" class="hover:text-emerald-400 transition-colors">Skills</a>
+                <a href="#projects" class="hover:text-emerald-400 transition-colors">Projects</a>
+                <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-screen flex items-center justify-center pt-20 px-6">
+        <div class="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="reveal">
+                <div class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full mb-4 uppercase tracking-widest border border-emerald-500/20">Available for Hire</div>
+                <h1 class="text-6xl font-bold text-white mb-4 leading-tight tracking-tight">Prem Jha</h1>
+                <p class="text-2xl text-slate-400 mb-6">Software Developer & <span id="typing" class="text-emerald-400"></span></p>
+                <p class="text-slate-400 mb-8 leading-relaxed max-w-md">Building robust backend architectures and scalable APIs with a focus on performance and clean code using modern Python frameworks.</p>
+                <div class="flex gap-4">
+                    <a href="#projects" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition-all">View Work</a>
+                    <a href="mailto:pjha5863@gmail.com" class="px-6 py-3 border border-slate-700 hover:border-emerald-500/50 rounded-lg transition-all">Contact Me</a>
+                </div>
+            </div>
+            <div class="reveal relative flex justify-center">
+                <div class="w-64 h-64 md:w-80 md:h-80 relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=800" alt="Prem Jha" class="relative rounded-full w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all border-4 border-slate-900 shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-24 bg-slate-900/30">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center text-white">Core Competencies</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-2xl reveal hover:border-emerald-500/30 transition-colors group">
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-6 text-emerald-400 text-2xl group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all"><i class="fab fa-python"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Python</h3>
+                    <p class="text-slate-400 text-sm">Expert in asynchronous programming, automation, and core Python logic for complex computations.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl reveal hover:border-emerald-500/30 transition-colors group">
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-6 text-emerald-400 text-2xl group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all"><i class="fas fa-flask"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Flask</h3>
+                    <p class="text-slate-400 text-sm">Designing RESTful APIs and lightweight web applications with structured, maintainable patterns.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl reveal hover:border-emerald-500/30 transition-colors group">
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-6 text-emerald-400 text-2xl group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all"><i class="fas fa-database"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">SQLAlchemy</h3>
+                    <p class="text-slate-400 text-sm">Efficient database modeling, ORM utilization, and performance tuning for PostgreSQL and MySQL.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-white">Selected Work</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="group relative overflow-hidden rounded-2xl glass reveal">
+                    <div class="p-8 h-full flex flex-col">
+                        <div class="flex gap-2 mb-4">
+                            <span class="text-[10px] px-2 py-0.5 border border-emerald-500/30 rounded text-emerald-400 mono uppercase">Flask</span>
+                            <span class="text-[10px] px-2 py-0.5 border border-emerald-500/30 rounded text-emerald-400 mono uppercase">Postgres</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Marketplace API Engine</h3>
+                        <p class="text-slate-400 text-sm mb-6 flex-grow">A high-concurrency e-commerce backend built with Flask, featuring JWT authentication, complex filtering with SQLAlchemy, and automated testing suites.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-white hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
+                            <a href="#" class="text-white hover:text-emerald-400 transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl glass reveal">
+                    <div class="p-8 h-full flex flex-col">
+                        <div class="flex gap-2 mb-4">
+                            <span class="text-[10px] px-2 py-0.5 border border-emerald-500/30 rounded text-emerald-400 mono uppercase">Python</span>
+                            <span class="text-[10px] px-2 py-0.5 border border-emerald-500/30 rounded text-emerald-400 mono uppercase">SQLAlchemy</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Data Analytics Hub</h3>
+                        <p class="text-slate-400 text-sm mb-6 flex-grow">Backend processing engine for real-time analytics data ingestion and storage optimization using custom SQLAlchemy mixins and batch processing logic.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-white hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
+                            <a href="#" class="text-white hover:text-emerald-400 transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="glass p-12 rounded-3xl text-center reveal border-emerald-500/20">
+                <h2 class="text-4xl font-bold mb-6 text-white">Let's collaborate.</h2>
+                <p class="text-xl mb-12 text-slate-400">Currently accepting new freelance projects and full-time opportunities.</p>
+                <a href="mailto:pjha5863@gmail.com" class="inline-block bg-emerald-500 text-slate-950 px-10 py-5 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-xl shadow-emerald-500/20">
+                    pjha5863@gmail.com
+                </a>
+                <div class="mt-12 flex justify-center gap-8 text-2xl text-slate-400">
+                    <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-white/5 text-center text-slate-500 text-sm">
+        &copy; 2024 Prem Jha. Built with Pythonic passion.
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        const words = ["Backend Architect", "Python Specialist", "API Designer", "Database Optimizer"];
+        let wordIdx = 0;
+        let charIdx = 0;
+        let isDeleting = false;
+        const typingEl = document.getElementById('typing');
+
+        function type() {
+            const currentWord = words[wordIdx];
+            if (isDeleting) {
+                typingEl.textContent = currentWord.substring(0, charIdx - 1);
+                charIdx--;
+            } else {
+                typingEl.textContent = currentWord.substring(0, charIdx + 1);
+                charIdx++;
+            }
+
+            let typeSpeed = isDeleting ? 50 : 150;
+
+            if (!isDeleting && charIdx === currentWord.length) {
+                isDeleting = true;
+                typeSpeed = 2000;
+            } else if (isDeleting && charIdx === 0) {
+                isDeleting = false;
+                wordIdx = (wordIdx + 1) % words.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+        type();
+    </script>
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 50) {
+        nav.classList.add('py-2');
+        nav.classList.remove('py-4');
+        nav.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+    } else {
+        nav.classList.add('py-4');
+        nav.classList.remove('py-2');
+        nav.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+    }
+});
+
+console.log("%c Prem Jha | Backend Developer ", "background: #10b981; color: #020617; font-weight: bold; padding: 4px; border-radius: 4px;");
+</script>
+</body>
+</html>

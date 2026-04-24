@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generated App</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-attachment: fixed;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#findingsContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+#findingsContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#findingsContainer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+@keyframes pulse-warning {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.critical-alert {
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+  </style>
+</head>
+<body>
+<div class="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 font-sans selection:bg-blue-500/30">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-10 text-center">
+      <div class="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">Security Shield Active</div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent mb-3">SpamShield AI</h1>
+      <p class="text-slate-400 max-w-lg mx-auto">Advanced Bayesian-inspired heuristic analysis for detecting phishing, marketing spam, and suspicious email patterns.</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-2xl">
+          <div class="flex justify-between items-center mb-4">
+            <label class="text-sm font-medium text-slate-400 uppercase tracking-wider">Email Payload</label>
+            <span id="charCount" class="text-xs text-slate-500 font-mono">0 chars</span>
+          </div>
+          <textarea id="emailInput" class="w-full h-80 bg-slate-950/50 border border-slate-800 rounded-xl p-5 text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all outline-none resize-none placeholder:text-slate-700" placeholder="Paste the full email content including headers if available..."></textarea>
+          <button id="analyzeBtn" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl transition-all transform active:scale-[0.99] shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2">
+            <svg id="spinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span id="btnText">Run Heuristic Scan</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl flex flex-col items-center justify-center text-center shadow-xl">
+          <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Spam-o-meter</h3>
+          <div class="relative w-48 h-48">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800/50" />
+              <circle id="gaugeProgress" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" fill="transparent" class="text-blue-500 transition-all duration-1000 ease-out" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="scoreValue" class="text-4xl font-black font-mono">0%</span>
+              <span id="scoreLabel" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Awaiting Data</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl min-h-[250px] shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Threat Breakdown</h3>
+            <span id="threatCount" class="bg-slate-800 text-[10px] px-2 py-0.5 rounded-full text-slate-400">0 Triggers</span>
+          </div>
+          <div id="findingsContainer" class="space-y-2 overflow-y-auto max-h-60 pr-2">
+            <div class="flex flex-col items-center justify-center py-10 opacity-30">
+              <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+              <p class="text-xs italic">Ready for scan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script>
+const SPAM_KEYWORDS = {
+  'urgent': 15, 'winner': 20, 'congratulations': 15, 'free': 10, 'click here': 20, 
+  'guaranteed': 12, 'no cost': 10, 'investment': 15, 'cryptocurrency': 18, 
+  'account suspended': 25, 'verify identity': 20, 'unusual activity': 15, 
+  'billion dollars': 22, 'inheritance': 20, 'refund': 12, 'gift card': 15,
+  'lottery': 20, 'casino': 15, 'act now': 15, 'limited time': 10, 'password': 12,
+  'paypal': 10, 'bank': 10, 'update your info': 18, 'claims': 15, 'weight loss': 15,
+  'medicine': 10, 'viagra': 25, 'rolex': 15, 'cheap': 10, 'low price': 12
+};
+
+const analyzeBtn = document.getElementById('analyzeBtn');
+const emailInput = document.getElementById('emailInput');
+const gaugeProgress = document.getElementById('gaugeProgress');
+const scoreValue = document.getElementById('scoreValue');
+const scoreLabel = document.getElementById('scoreLabel');
+const findingsContainer = document.getElementById('findingsContainer');
+const spinner = document.getElementById('spinner');
+const btnText = document.getElementById('btnText');
+const charCount = document.getElementById('charCount');
+const threatCountDisplay = document.getElementById('threatCount');
+
+// Track character count
+emailInput.addEventListener('input', (e) => {
+  charCount.textContent = `${e.target.value.length} chars`;
+});
+
+function updateGauge(percent) {
+  const circumference = 2 * Math.PI * 42;
+  const offset = circumference - (percent / 100) * circumference;
+  gaugeProgress.style.strokeDashoffset = offset;
+  
+  // Clear existing color classes
+  gaugeProgress.classList.remove('text-blue-500', 'text-green-500', 'text-yellow-500', 'text-red-500');
+  scoreLabel.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
+
+  if (percent > 70) {
+    gaugeProgress.classList.add('text-red-500');
+    scoreLabel.textContent = 'High Risk';
+    scoreLabel.classList.add('text-red-500');
+  } else if (percent > 35) {
+    gaugeProgress.classList.add('text-yellow-500');
+    scoreLabel.textContent = 'Suspicious';
+    scoreLabel.classList.add('text-yellow-500');
+  } else if (percent > 0) {
+    gaugeProgress.classList.add('text-green-500');
+    scoreLabel.textContent = 'Likely Safe';
+    scoreLabel.classList.add('text-green-500');
+  } else {
+    gaugeProgress.classList.add('text-blue-500');
+    scoreLabel.textContent = 'Clear';
+  }
+}
+
+analyzeBtn.addEventListener('click', () => {
+  const text = emailInput.value.toLowerCase();
+  if (!text.trim()) {
+    alert('Please enter email content for analysis.');
+    return;
+  }
+
+  // UI State: Loading
+  btnText.innerText = 'Analyzing Heuristics...';
+  analyzeBtn.disabled = true;
+  spinner.classList.remove('hidden');
+
+  setTimeout(() => {
+    let score = 0;
+    let detected = [];
+
+    // 1. Keyword analysis
+    Object.keys(SPAM_KEYWORDS).forEach(keyword => {
+      const regex = new RegExp("\\b" + keyword + "\\b", "gi");
+      const matches = text.match(regex);
+      if (matches) {
+        score += SPAM_KEYWORDS[keyword] * Math.min(matches.length, 2); // Cap repetitive keyword weight
+        detected.push({ name: keyword, type: 'Pattern Match' });
+      }
+    });
+
+    // 2. Excessive capitalization check
+    const capsCount = (emailInput.value.match(/[A-Z]/g) || []).length;
+    if (capsCount > emailInput.value.length * 0.25 && emailInput.value.length > 30) {
+      score += 20;
+      detected.push({ name: 'Excessive Caps', type: 'Aggressive Formatting' });
+    }
+
+    // 3. Link density check
+    const linkCount = (text.match(/http|www|\.com|\.net|\.org/g) || []).length;
+    if (linkCount > 3) {
+      score += 15;
+      detected.push({ name: 'High Link Density', type: 'Phishing Risk' });
+    }
+
+    const finalScore = Math.min(score, 100);
+    
+    // Update UI
+    scoreValue.textContent = `${finalScore}%`;
+    updateGauge(finalScore);
+    threatCountDisplay.textContent = `${detected.length} Triggers`;
+
+    findingsContainer.innerHTML = '';
+    if (detected.length === 0) {
+      findingsContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-10 text-green-400">
+          <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <p class="text-xs font-bold uppercase">No threats detected</p>
+        </div>`;
+    } else {
+      detected.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'bg-slate-800/40 p-3 rounded-lg border border-slate-700/50 flex justify-between items-start';
+        div.innerHTML = `
+          <div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold mb-0.5">${item.type}</div>
+            <div class="text-sm text-slate-200 capitalize">${item.name}</div>
+          </div>
+          <div class="text-[10px] px-2 py-1 bg-red-500/10 text-red-400 rounded border border-red-500/20">Flagged</div>
+        `;
+        findingsContainer.appendChild(div);
+      });
+    }
+
+    btnText.innerText = 'Run Heuristic Scan';
+    analyzeBtn.disabled = false;
+    spinner.classList.add('hidden');
+  }, 1200);
+});
+  </script>
+</body>
+</html>
