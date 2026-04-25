@@ -1,0 +1,409 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Resume Analyzer</title><script src="https://cdn.tailwindcss.com"></script><style>
+body {
+  background-color: #1f2937; /* Dark gray */
+  color: #e5e7eb; /* Light gray text */
+}
+.container {
+  max-width: 900px;
+}
+.text-teal-400 {
+  color: #2dd4bf; /* Teal color */
+}
+input[type="file"] {
+  border: 1px solid #374151; /* Darker gray border */
+}
+.bg-gray-800 {
+  background-color: #1f2937; /* Dark gray */
+}
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.hover\:bg-gray-600:hover {
+  background-color: #4b5563; /* Slightly lighter dark gray on hover */
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.w-16 {
+  width: 4rem;
+}
+.h-16 {
+  height: 4rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.mb-12 {
+  margin-bottom: 3rem;
+}
+.mt-12 {
+  margin-top: 3rem;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.justify-center {
+  justify-content: center;
+}
+.items-center {
+  align-items: center;
+}
+.flex {
+  display: flex;
+}
+.hidden {
+  display: none;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-dashed {
+  border-style: dashed;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.pt-5 {
+  padding-top: 1.25rem;
+}
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
+.relative {
+  position: relative;
+}
+.absolute {
+  position: absolute;
+}
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.z-10 {
+  z-index: 10;
+}
+.grid {
+  display: grid;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.md\:grid-cols-2 {
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.text-gray-300 {
+  color: #d1d5db;
+}
+.text-gray-400 {
+  color: #9ca3af;
+}
+.text-gray-500 {
+  color: #6b7280;
+}
+.text-gray-600 {
+  color: #4b5563;
+}
+.text-gray-700 {
+  color: #374151;
+}
+.text-red-500 {
+  color: #ef4444;
+}
+
+.card {
+  background-color: #111827; /* Even darker gray for cards */
+  border: 1px solid #374151;
+}
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #374151;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 1rem;
+  background-color: #2dd4bf;
+  text-align: center;
+  line-height: 1rem;
+  color: #1f2937;
+  font-weight: bold;
+}
+
+/* Tailwind CSS utility classes that were missing */
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.text-center {
+  text-align: center;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.w-16 {
+  width: 4rem;
+}
+.h-16 {
+  height: 4rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.text-teal-400 {
+  color: #2dd4bf;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-gray-300 {
+  color: #d1d5db;
+}
+.bg-gray-800 {
+  background-color: #1f2937;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.w-full {
+  width: 100%;
+}
+.flex-col {
+  flex-direction: column;
+}
+.h-48 {
+  height: 12rem;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-gray-700 {
+  border-color: #374151;
+}
+.border-dashed {
+  border-style: dashed;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.bg-gray-700 {
+  background-color: #374151;
+}
+.hover\:bg-gray-600:hover {
+  background-color: #4b5563;
+}
+.pt-5 {
+  padding-top: 1.25rem;
+}
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.hidden {
+  display: none;
+}
+.mt-12 {
+  margin-top: 3rem;
+}
+.text-gray-500 {
+  color: #6b7280;
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+</style>
+</head><body class="bg-gray-900 text-white font-sans"><div class="container mx-auto px-4 py-8"><header class="text-center mb-8"><img src="https://www.svgrepo.com/show/527758/analyze.svg" alt="Resume Icon" class="mx-auto w-16 h-16 mb-4"><h1 class="text-4xl font-bold text-teal-400">Resume Analyzer</h1><p class="text-lg text-gray-300">Upload your resume for instant insights.</p></header><main><section id="upload-section" class="bg-gray-800 p-6 rounded-lg shadow-md mb-8"><h2 class="text-2xl font-semibold mb-4">Upload Resume</h2><div class="flex items-center justify-center w-full"><label for="resume-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-700 border-dashed rounded-lg cursor-pointer bg-gray-700 hover:bg-gray-600"><div class="flex flex-col items-center justify-center pt-5 pb-6"><svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903 7 7 0 1115.381 5.192 5 5 0 01-1.026-9.991V7a4 4 0 00-4-4v2a2 2 0 002 2h2a2 2 0 012 2v2a2 2 0 01-2 2H7z"></path></svg><p class="mb-2 text-sm text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p><p class="text-xs text-gray-500">PDF only</p></div><input id="resume-upload" type="file" accept=".pdf" class="hidden" /></label></div></section><section id="results-section" class="hidden bg-gray-800 p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Analysis Results</h2><div id="analysis-output"></div></section></main><footer class="text-center mt-12 text-gray-500"><p>&copy; 2023 Prem Jha. All rights reserved.</p></footer></div><script src="app.js"></script><script>
+document.getElementById('resume-upload').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        uploadResume(file);
+    }
+});
+
+async function uploadResume(file) {
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    // In a real application, you would send this to a backend server.
+    // For this example, we'll simulate the analysis and results.
+    console.log('Simulating resume upload and analysis for:', file.name);
+
+    displayLoadingState();
+
+    // Simulate network delay and analysis
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Simulate analysis results
+    const analysisResults = simulateAnalysis(file);
+
+    displayResults(analysisResults);
+}
+
+function simulateAnalysis(file) {
+    // This is a placeholder for actual resume parsing and analysis.
+    // In a real-world scenario, you'd use libraries like pdf-parse, natural language processing (NLP) tools,
+    // and potentially integrate with an ATS screening service or custom algorithms.
+
+    const keywords = ['JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'Agile', 'SQL', 'API'];
+    const skillsFound = keywords.filter(skill => file.name.toLowerCase().includes(skill.toLowerCase()) || Math.random() > 0.5);
+    const totalKeywords = keywords.length;
+    const matchedKeywords = skillsFound.length;
+
+    // Simulate ATS score (e.g., based on keyword match density)
+    const atsScore = Math.min(100, Math.round((matchedKeywords / totalKeywords) * 100) + Math.floor(Math.random() * 10));
+
+    // Simulate experience summary
+    const experienceSummary = "This resume likely details experience in " + skillsFound.slice(0, 3).join(', ') + ". Further analysis needed for detailed summary.";
+
+    return {
+        fileName: file.name,
+        atsScore: atsScore,
+        identifiedSkills: skillsFound,
+        experienceSummary: experienceSummary,
+        keywordMatchPercentage: Math.round((matchedKeywords / totalKeywords) * 100)
+    };
+}
+
+function displayLoadingState() {
+    const resultsSection = document.getElementById('results-section');
+    const outputDiv = document.getElementById('analysis-output');
+    outputDiv.innerHTML = '<div class="text-center"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-400 mx-auto mb-4"></div><p class="text-lg">Analyzing your resume...</p></div>';
+    resultsSection.classList.remove('hidden');
+}
+
+function displayResults(results) {
+    const outputDiv = document.getElementById('analysis-output');
+    const progressBarWidth = results.atsScore;
+
+    outputDiv.innerHTML = `
+        <div class="mb-6 p-4 card rounded-lg">
+            <h3 class="text-xl font-semibold mb-3">Overall Score</h3>
+            <div class="progress-bar-container rounded-full h-3 mb-2">
+                <div class="progress-bar rounded-full h-3" style="width: ${progressBarWidth}%;"></div>
+            </div>
+            <p class="text-center text-lg font-bold ${results.atsScore < 50 ? 'text-red-500' : 'text-teal-400'}">${results.atsScore}%</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="p-4 card rounded-lg">
+                <h3 class="text-xl font-semibold mb-3">Identified Skills</h3>
+                ${results.identifiedSkills.length > 0 ? results.identifiedSkills.map(skill => `<span class="inline-block bg-gray-700 text-teal-300 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded">${skill}</span>`).join('') : '<p class="text-gray-500">No specific skills identified.</p>'}
+            </div>
+            <div class="p-4 card rounded-lg">
+                <h3 class="text-xl font-semibold mb-3">Keyword Match</h3>
+                <p class="text-lg">${results.keywordMatchPercentage}%</p>
+                <p class="text-sm text-gray-400">Based on a predefined set of common job keywords.</p>
+            </div>
+        </div>
+
+        <div class="p-4 card rounded-lg">
+            <h3 class="text-xl font-semibold mb-3">Experience Summary</h3>
+            <p class="text-gray-300 leading-relaxed">${results.experienceSummary}</p>
+        </div>
+    `;
+}
+
+</script>
+</body></html>

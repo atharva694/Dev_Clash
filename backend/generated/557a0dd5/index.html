@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Insight Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom dark theme styles */
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .card {
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+        }
+        input[type="file"] {
+            border: 2px dashed #63b3ed;
+            background-color: #2d3748;
+        }
+        input[type="file"]::file-selector-button {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #3182ce;
+        }
+        button {
+            background-color: #38a169;
+            color: white;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #2f855a;
+        }
+        .result-section {
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+        }
+        .result-item {
+            border-bottom: 1px solid #4a5568;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .highlight {
+            color: #68d391;
+        }
+        .suggest {
+            color: #f6ad55;
+        }
+        .loading-text {
+            color: #90cdf4; /* Tailwind's blue-300 */
+        }
+    </style>
+<style>
+/* Custom dark theme styles */
+body {
+    background-color: #1a202c;
+    color: #e2e8f0;
+}
+.card {
+    background-color: #2d3748;
+    border: 1px solid #4a5568;
+}
+input[type="file"] {
+    border: 2px dashed #63b3ed;
+    background-color: #2d3748;
+}
+input[type="file"]::file-selector-button {
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+input[type="file"]::file-selector-button:hover {
+    background-color: #3182ce;
+}
+button {
+    background-color: #38a169;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+button:hover {
+    background-color: #2f855a;
+}
+.result-section {
+    background-color: #2d3748;
+    border: 1px solid #4a5568;
+}
+.result-item {
+    border-bottom: 1px solid #4a5568;
+}
+.result-item:last-child {
+    border-bottom: none;
+}
+.highlight {
+    color: #68d391;
+}
+.suggest {
+    color: #f6ad55;
+}
+.loading-text {
+    color: #90cdf4; /* Tailwind's blue-300 */
+}
+</style>
+</head>
+<body class="font-sans antialiased">
+    <div class="container mx-auto px-4 py-16">
+        <h1 class="text-4xl font-bold text-center mb-12 text-gray-200">Resume Insight & Improvement Tool</h1>
+
+        <div id="upload-section" class="max-w-2xl mx-auto mb-12">
+            <div id="drop-zone" class="border-4 border-dashed border-blue-400 rounded-lg p-8 text-center cursor-pointer transition duration-300 hover:border-blue-500 hover:bg-gray-800">
+                <svg class="mx-auto h-12 w-12 text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903 3 3 0 111.546-4.636 4 4 0 011.846 7.158" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 8c0-4.418-3.582-8-8-8 -4.418 0-8 3.582-8 8 0 1.156.297 2.244.811 3.211" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16H5a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2h-1.135M7 16w10 0" />
+                </svg>
+                <h2 class="text-2xl font-semibold text-gray-300">Drag & Drop Resume Here</h2>
+                <p class="text-gray-400 mb-4">or</p>
+                <input type="file" id="resume-file" accept=".pdf,.doc,.docx,text/plain" class="hidden">
+                <label for="resume-file" class="px-6 py-3 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300">Browse Files</label>
+            </div>
+            <p id="file-name" class="text-center mt-4 text-gray-400"></p>
+            <button id="analyze-btn" class="block w-full mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">Analyze Resume</button>
+        </div>
+
+        <div id="results-section" class="hidden max-w-3xl mx-auto mt-12">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-200">Resume Insights</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Skills Analysis</h3>
+                    <ul id="skills-list" class="space-y-2">
+                        <li class="result-item p-3 rounded loading-text">Loading...</li>
+                    </ul>
+                </div>
+
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-300">ATS Score</h3>
+                    <div id="ats-score" class="text-5xl font-bold text-center text-green-400 py-4">--</div>
+                    <p class="text-center text-gray-400">Estimated score based on keyword density and formatting.</p>
+                </div>
+            </div>
+
+            <div class="card p-6 rounded-lg shadow-lg mt-8">
+                <h3 class="text-2xl font-semibold mb-4 text-teal-300">Achievements & Projects</h3>
+                <ul id="achievements-projects-list" class="space-y-2">
+                    <li class="result-item p-3 rounded loading-text">Loading...</li>
+                </ul>
+            </div>
+
+            <div class="card p-6 rounded-lg shadow-lg mt-8">
+                <h3 class="text-2xl font-semibold mb-4 text-yellow-300">Improvement Suggestions</h3>
+                <ul id="suggestions-list" class="space-y-2">
+                    <li class="result-item p-3 rounded loading-text">Loading...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth.js/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('resume-file');
+        const fileNameDisplay = document.getElementById('file-name');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const resultsSection = document.getElementById('results-section');
+        const skillsList = document.getElementById('skills-list');
+        const atsScoreDisplay = document.getElementById('ats-score');
+        const achievementsProjectsList = document.getElementById('achievements-projects-list');
+        const suggestionsList = document.getElementById('suggestions-list');
+
+        let uploadedFile = null;
+
+        // --- Drag and Drop Functionality ---
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500', 'bg-gray-800');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500', 'bg-gray-800');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-gray-800');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                handleFile(files[0]);
+            }
+        });
+
+        // --- File Input Change ---
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // --- Analyze Button Click ---
+        analyzeBtn.addEventListener('click', () => {
+            if (uploadedFile) {
+                analyzeResume(uploadedFile);
+            }
+        });
+
+        function handleFile(file) {
+            uploadedFile = file;
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            analyzeBtn.disabled = false;
+            resultsSection.classList.add('hidden'); // Hide previous results
+            // Clear previous results
+            skillsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+            atsScoreDisplay.textContent = '--';
+            achievementsProjectsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+            suggestionsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+        }
+
+        // --- Resume Analysis Logic ---
+        async function analyzeResume(file) {
+            document.getElementById('upload-section').classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+
+            let resumeText = '';
+            try {
+                if (file.type === 'application/pdf') {
+                    resumeText = await extractTextFromPDF(file);
+                } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.doc')) { // Mammoth handles .doc as well
+                    resumeText = await extractTextFromDOCX(file);
+                } else if (file.type === 'text/plain') {
+                    resumeText = await extractTextFromTXT(file);
+                } else {
+                    throw new Error('Unsupported file type. Please upload PDF, DOCX, or TXT.');
+                }
+
+                const insights = performAnalysis(resumeText.toLowerCase()); // Basic case normalization
+                displayResults(insights);
+
+            } catch (error) {
+                console.error("Error analyzing file:", error);
+                skillsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+                atsScoreDisplay.textContent = 'Error';
+                achievementsProjectsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+                suggestionsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+            }
+        }
+
+        // --- Text Extraction Functions ---
+        async function extractTextFromPDF(file) {
+            const reader = new FileReader();
+            const arrayBuffer = await new Promise((resolve, reject) => {
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+
+            const pdfjsLib = window['pdfjs-dist/build/pdf.mjs'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n';
+            }
+            return fullText;
+        }
+
+        async function extractTextFromDOCX(file) {
+            const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+            return result.value;
+        }
+
+        async function extractTextFromTXT(file) {
+            const reader = new FileReader();
+            return new Promise((resolve, reject) => {
+                reader.onload = (event) => resolve(event.target.result);
+                reader.onerror = (event) => reject(new Error(`File could not be read! Code ${event.target.error.code}`));
+                reader.readAsText(file);
+            });
+        }
+
+        function performAnalysis(text) {
+            // --- Placeholder Analysis ---
+            // This is a highly simplified simulation. Real analysis requires NLP.
+            const skills = ['JavaScript', 'React', 'Node.js', 'HTML', 'CSS', 'Python', 'SQL', 'Git', 'Problem Solving', 'Communication', 'Agile', 'RESTful APIs', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'Project Management', 'Data Analysis', 'Machine Learning', 'Deep Learning'];
+            const foundSkills = skills.filter(skill => text.includes(skill.toLowerCase()));
+            const missingSkills = skills.filter(skill => !foundSkills.includes(skill));
+
+            // Simulate ATS score based on presence of keywords and some basic formatting checks (very rough)
+            let atsScore = 50;
+            if (foundSkills.length >= 5) atsScore += 20;
+            if (text.length > 500) atsScore += 10;
+            if (text.includes('project') || text.includes('achievement')) atsScore += 10;
+            if (text.includes('education') && text.includes('degree')) atsScore += 5;
+            // Bonus for using bullet points (simulated by counting newline characters after a bullet-like marker)
+            const bulletPointCount = (text.match(/^\s*[-*•]\s/gm) || []).length;
+            if (bulletPointCount > 5) atsScore += 5;
+            atsScore = Math.min(atsScore, 100); // Cap at 100
+
+            // Simulate achievements/projects (look for keywords and structure)
+            const achievements = text.match(/\b(achieved|completed|developed|launched|managed|led|created|designed|implemented)\b.*?(\.|;)/g) || [];
+            const projects = text.match(/\b(project|initiative|system|platform|application|software)\b.*?(\.|;)/g) || [];
+            // Filter out very short or likely non-relevant matches
+            const relevantAchievementsProjects = [...achievements, ...projects].filter(item => item.length > 15).slice(0, 7); // Limit to 7
+
+            // Suggestions
+            const suggestions = [];
+            if (missingSkills.length > 0) {
+                suggestions.push(`Consider adding keywords related to these skills: <span class="highlight">${missingSkills.join(', ')}</span>.`);
+            }
+            if (foundSkills.length < 5) {
+                suggestions.push("Ensure your key technical and soft skills are prominently listed and described, using relevant keywords.");
+            }
+            if (relevantAchievementsProjects.length < 3) {
+                suggestions.push("Quantify your achievements and detail your projects with specific outcomes and metrics where possible.");
+            }
+            if (!text.includes('keywords')) {
+                 suggestions.push("Tailor your resume with keywords relevant to the specific job description you are applying for.");
+            }
+            suggestions.push("Use strong action verbs to start bullet points describing your experience and accomplishments.");
+            suggestions.push("Ensure consistent formatting and clear section headings for better ATS compatibility and readability.");
+            if (bulletPointCount < 3) {
+                suggestions.push("Utilize bullet points to describe responsibilities and achievements, making your resume easier to scan.");
+            }
+
+            return {
+                foundSkills: foundSkills,
+                missingSkills: missingSkills,
+                atsScore: atsScore,
+                achievementsProjects: relevantAchievementsProjects,
+                suggestions: suggestions
+            };
+        }
+
+        function displayResults(insights) {
+            // Skills
+            skillsList.innerHTML = '';
+            if (insights.foundSkills.length > 0) {
+                insights.foundSkills.forEach(skill => {
+                    const li = document.createElement('li');
+                    li.className = 'result-item p-3 rounded';
+                    li.innerHTML = `<span class="highlight font-semibold">${skill}</span>`;
+                    skillsList.appendChild(li);
+                });
+            } else {
+                 skillsList.innerHTML = '<li class="result-item p-3 rounded">No specific skills detected from the predefined list.</li>';
+            }
+            if (insights.missingSkills.length > 0) {
+                 const li = document.createElement('li');
+                 li.className = 'result-item p-3 rounded';
+                 li.innerHTML = `Potential areas to strengthen: <span class="suggest">${insights.missingSkills.join(', ')}</span>`;
+                 skillsList.appendChild(li);
+            }
+
+            // ATS Score
+            atsScoreDisplay.textContent = insights.atsScore;
+            // Adjust color based on score for visual feedback
+            if (insights.atsScore < 60) {
+                atsScoreDisplay.classList.add('text-red-400');
+                atsScoreDisplay.classList.remove('text-yellow-400', 'text-green-400');
+            } else if (insights.atsScore < 85) {
+                atsScoreDisplay.classList.add('text-yellow-400');
+                atsScoreDisplay.classList.remove('text-red-400', 'text-green-400');
+            } else {
+                atsScoreDisplay.classList.add('text-green-400');
+                atsScoreDisplay.classList.remove('text-red-400', 'text-yellow-400');
+            }
+
+            // Achievements & Projects
+            achievementsProjectsList.innerHTML = '';
+            if (insights.achievementsProjects.length > 0) {
+                insights.achievementsProjects.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'result-item p-3 rounded';
+                    li.innerHTML = item.trim(); // Use innerHTML here to preserve potential HTML entities from extraction
+                    achievementsProjectsList.appendChild(li);
+                });
+            } else {
+                achievementsProjectsList.innerHTML = '<li class="result-item p-3 rounded">No specific achievements or projects highlighted in the text.</li>';
+            }
+
+            // Suggestions
+            suggestionsList.innerHTML = '';
+            if (insights.suggestions.length > 0) {
+                insights.suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.className = 'result-item p-3 rounded';
+                    li.innerHTML = suggestion;
+                    suggestionsList.appendChild(li);
+                });
+            } else {
+                suggestionsList.innerHTML = '<li class="result-item p-3 rounded">No specific suggestions generated.</li>';
+            }
+        }
+
+        // Initialize UI state
+        analyzeBtn.disabled = true;
+    </script>
+<script>
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('resume-file');
+const fileNameDisplay = document.getElementById('file-name');
+const analyzeBtn = document.getElementById('analyze-btn');
+const resultsSection = document.getElementById('results-section');
+const skillsList = document.getElementById('skills-list');
+const atsScoreDisplay = document.getElementById('ats-score');
+const achievementsProjectsList = document.getElementById('achievements-projects-list');
+const suggestionsList = document.getElementById('suggestions-list');
+
+let uploadedFile = null;
+
+// --- Drag and Drop Functionality ---
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-blue-500', 'bg-gray-800');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('border-blue-500', 'bg-gray-800');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-blue-500', 'bg-gray-800');
+    const files = e.dataTransfer.files;
+    if (files.length) {
+        handleFile(files[0]);
+    }
+});
+
+// --- File Input Change ---
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+// --- Analyze Button Click ---
+analyzeBtn.addEventListener('click', () => {
+    if (uploadedFile) {
+        analyzeResume(uploadedFile);
+    }
+});
+
+function handleFile(file) {
+    uploadedFile = file;
+    fileNameDisplay.textContent = `Selected: ${file.name}`;
+    analyzeBtn.disabled = false;
+    resultsSection.classList.add('hidden'); // Hide previous results
+    // Clear previous results
+    skillsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+    atsScoreDisplay.textContent = '--';
+    achievementsProjectsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+    suggestionsList.innerHTML = '<li class="result-item p-3 rounded loading-text">Loading...</li>';
+}
+
+// --- Resume Analysis Logic ---
+async function analyzeResume(file) {
+    document.getElementById('upload-section').classList.add('hidden');
+    resultsSection.classList.remove('hidden');
+
+    let resumeText = '';
+    try {
+        if (file.type === 'application/pdf') {
+            resumeText = await extractTextFromPDF(file);
+        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.doc')) { // Mammoth handles .doc as well
+            resumeText = await extractTextFromDOCX(file);
+        } else if (file.type === 'text/plain') {
+            resumeText = await extractTextFromTXT(file);
+        } else {
+            throw new Error('Unsupported file type. Please upload PDF, DOCX, or TXT.');
+        }
+
+        const insights = performAnalysis(resumeText.toLowerCase()); // Basic case normalization
+        displayResults(insights);
+
+    } catch (error) {
+        console.error("Error analyzing file:", error);
+        skillsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+        atsScoreDisplay.textContent = 'Error';
+        achievementsProjectsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+        suggestionsList.innerHTML = `<li class="result-item p-3 rounded text-red-400">Error processing file: ${error.message}</li>`;
+    }
+}
+
+// --- Text Extraction Functions ---
+async function extractTextFromPDF(file) {
+    const reader = new FileReader();
+    const arrayBuffer = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+
+    const pdfjsLib = window['pdfjs-dist/build/pdf.mjs'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n';
+    }
+    return fullText;
+}
+
+async function extractTextFromDOCX(file) {
+    const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+    return result.value;
+}
+
+async function extractTextFromTXT(file) {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (event) => reject(new Error(`File could not be read! Code ${event.target.error.code}`));
+        reader.readAsText(file);
+    });
+}
+
+function performAnalysis(text) {
+    // --- Placeholder Analysis ---
+    // This is a highly simplified simulation. Real analysis requires NLP.
+    const skills = ['JavaScript', 'React', 'Node.js', 'HTML', 'CSS', 'Python', 'SQL', 'Git', 'Problem Solving', 'Communication', 'Agile', 'RESTful APIs', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'Project Management', 'Data Analysis', 'Machine Learning', 'Deep Learning'];
+    const foundSkills = skills.filter(skill => text.includes(skill.toLowerCase()));
+    const missingSkills = skills.filter(skill => !foundSkills.includes(skill));
+
+    // Simulate ATS score based on presence of keywords and some basic formatting checks (very rough)
+    let atsScore = 50;
+    if (foundSkills.length >= 5) atsScore += 20;
+    if (text.length > 500) atsScore += 10;
+    if (text.includes('project') || text.includes('achievement')) atsScore += 10;
+    if (text.includes('education') && text.includes('degree')) atsScore += 5;
+    // Bonus for using bullet points (simulated by counting newline characters after a bullet-like marker)
+    const bulletPointCount = (text.match(/^\s*[-*•]\s/gm) || []).length;
+    if (bulletPointCount > 5) atsScore += 5;
+    atsScore = Math.min(atsScore, 100); // Cap at 100
+
+    // Simulate achievements/projects (look for keywords and structure)
+    const achievements = text.match(/\b(achieved|completed|developed|launched|managed|led|created|designed|implemented)\b.*?(\.|;)/g) || [];
+    const projects = text.match(/\b(project|initiative|system|platform|application|software)\b.*?(\.|;)/g) || [];
+    // Filter out very short or likely non-relevant matches
+    const relevantAchievementsProjects = [...achievements, ...projects].filter(item => item.length > 15).slice(0, 7); // Limit to 7
+
+    // Suggestions
+    const suggestions = [];
+    if (missingSkills.length > 0) {
+        suggestions.push(`Consider adding keywords related to these skills: <span class="highlight">${missingSkills.join(', ')}</span>.`);
+    }
+    if (foundSkills.length < 5) {
+        suggestions.push("Ensure your key technical and soft skills are prominently listed and described, using relevant keywords.");
+    }
+    if (relevantAchievementsProjects.length < 3) {
+        suggestions.push("Quantify your achievements and detail your projects with specific outcomes and metrics where possible.");
+    }
+    if (!text.includes('keywords')) {
+         suggestions.push("Tailor your resume with keywords relevant to the specific job description you are applying for.");
+    }
+    suggestions.push("Use strong action verbs to start bullet points describing your experience and accomplishments.");
+    suggestions.push("Ensure consistent formatting and clear section headings for better ATS compatibility and readability.");
+    if (bulletPointCount < 3) {
+        suggestions.push("Utilize bullet points to describe responsibilities and achievements, making your resume easier to scan.");
+    }
+
+    return {
+        foundSkills: foundSkills,
+        missingSkills: missingSkills,
+        atsScore: atsScore,
+        achievementsProjects: relevantAchievementsProjects,
+        suggestions: suggestions
+    };
+}
+
+function displayResults(insights) {
+    // Skills
+    skillsList.innerHTML = '';
+    if (insights.foundSkills.length > 0) {
+        insights.foundSkills.forEach(skill => {
+            const li = document.createElement('li');
+            li.className = 'result-item p-3 rounded';
+            li.innerHTML = `<span class="highlight font-semibold">${skill}</span>`;
+            skillsList.appendChild(li);
+        });
+    } else {
+         skillsList.innerHTML = '<li class="result-item p-3 rounded">No specific skills detected from the predefined list.</li>';
+    }
+    if (insights.missingSkills.length > 0) {
+         const li = document.createElement('li');
+         li.className = 'result-item p-3 rounded';
+         li.innerHTML = `Potential areas to strengthen: <span class="suggest">${insights.missingSkills.join(', ')}</span>`;
+         skillsList.appendChild(li);
+    }
+
+    // ATS Score
+    atsScoreDisplay.textContent = insights.atsScore;
+    // Adjust color based on score for visual feedback
+    if (insights.atsScore < 60) {
+        atsScoreDisplay.classList.add('text-red-400');
+        atsScoreDisplay.classList.remove('text-yellow-400', 'text-green-400');
+    } else if (insights.atsScore < 85) {
+        atsScoreDisplay.classList.add('text-yellow-400');
+        atsScoreDisplay.classList.remove('text-red-400', 'text-green-400');
+    } else {
+        atsScoreDisplay.classList.add('text-green-400');
+        atsScoreDisplay.classList.remove('text-red-400', 'text-yellow-400');
+    }
+
+    // Achievements & Projects
+    achievementsProjectsList.innerHTML = '';
+    if (insights.achievementsProjects.length > 0) {
+        insights.achievementsProjects.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'result-item p-3 rounded';
+            li.innerHTML = item.trim(); // Use innerHTML here to preserve potential HTML entities from extraction
+            achievementsProjectsList.appendChild(li);
+        });
+    } else {
+        achievementsProjectsList.innerHTML = '<li class="result-item p-3 rounded">No specific achievements or projects highlighted in the text.</li>';
+    }
+
+    // Suggestions
+    suggestionsList.innerHTML = '';
+    if (insights.suggestions.length > 0) {
+        insights.suggestions.forEach(suggestion => {
+            const li = document.createElement('li');
+            li.className = 'result-item p-3 rounded';
+            li.innerHTML = suggestion;
+            suggestionsList.appendChild(li);
+        });
+    } else {
+        suggestionsList.innerHTML = '<li class="result-item p-3 rounded">No specific suggestions generated.</li>';
+    }
+}
+
+// Initialize UI state
+analyzeBtn.disabled = true;
+</script>
+</body>
+</html>

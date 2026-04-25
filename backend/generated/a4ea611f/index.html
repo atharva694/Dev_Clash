@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Zwiggy - Food, Tables & Groceries</title><script src="https://cdn.tailwindcss.com"></script><style>body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }</style><style>
+body {
+    background-color: #1f2937; /* dark gray */
+    color: #ffffff; /* white */
+}
+.bg-gray-850 {
+    background-color: #2d3748; /* slightly lighter dark gray for contrast */
+}
+header {
+    background-color: #dc2626; /* red-700 */
+}
+footer {
+    background-color: #374151; /* gray-700 */
+}
+button:hover {
+    filter: brightness(1.1);
+}
+nav ul li:hover {
+    color: #f87171; /* red-300 */
+    cursor: pointer;
+}
+</style>
+</head><body class="bg-gray-900 text-white min-h-screen flex flex-col"><header class="bg-red-700 p-4 shadow-lg"><div class="container mx-auto flex justify-between items-center"><h1 class="text-3xl font-bold">Zwiggy</h1><nav><ul class="flex space-x-4"><li class="hover:text-red-300 cursor-pointer">Food</li><li class="hover:text-red-300 cursor-pointer">Tables</li><li class="hover:text-red-300 cursor-pointer">Groceries</li><li class="hover:text-red-300 cursor-pointer">Login/Signup</li></ul></nav></div></header><main class="flex-grow container mx-auto p-6"><section id="hero" class="text-center py-16"><h2 class="text-5xl font-extrabold mb-4">Your City, Your Cravings, Delivered.</h2><p class="text-xl mb-8">Discover the best food, book tables, and get groceries in Delhi.</p><div class="flex justify-center space-x-4"><button class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Order Food</button><button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Book a Table</button><button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Order Groceries</button></div></section><section id="services" class="py-16"><h3 class="text-4xl font-bold text-center mb-12">What We Offer</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center"><img src="https://img.icons8.com/ios-filled/100/FF4500/meal.png" alt="Food Delivery Icon" class="w-20 h-20 mx-auto mb-4"><h3>Delicious Food Delivery</h3><p>From your favorite local eateries to popular chains, get it all delivered hot and fresh.</p></div><div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center"><img src="https://img.icons8.com/ios-filled/100/FF4500/table.png" alt="Table Booking Icon" class="w-20 h-20 mx-auto mb-4"><h3>Effortless Table Booking</h3><p>Reserve your spot at the best restaurants in Delhi with just a few clicks.</p></div><div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center"><img src="https://img.icons8.com/ios-filled/100/FF4500/shopping-cart.png" alt="Grocery Delivery Icon" class="w-20 h-20 mx-auto mb-4"><h3>Quick Grocery Shopping</h3><p>Get your daily essentials and more delivered to your doorstep quickly.</p></div></div></section><section id="restaurant-signup" class="py-16 bg-gray-850"><div class="text-center"><h3 class="text-4xl font-bold mb-4">Partner with Zwiggy</h3><p class="text-xl mb-8">Join us and reach thousands of customers in Delhi. Manage your menu and orders with ease.</p><button class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg">Sign Up Your Restaurant</button></div></section></main><footer class="bg-gray-800 p-6 mt-auto"><div class="container mx-auto text-center"><p>&copy; 2023 Zwiggy. All rights reserved.</p><div class="flex justify-center space-x-4 mt-4"><a href="#" class="hover:text-red-400">About Us</a><a href="#" class="hover:text-red-400">Contact</a><a href="#" class="hover:text-red-400">Privacy Policy</a></div></div></footer><script>document.addEventListener('DOMContentLoaded', () => { const navLinks = document.querySelectorAll('nav ul li'); navLinks.forEach(link => { link.addEventListener('click', () => { alert(`Navigating to ${link.textContent}... (Feature not yet implemented)`); }); }); const ctaButtons = document.querySelectorAll('main section button'); ctaButtons.forEach(button => { button.addEventListener('click', () => { alert(`${button.textContent} clicked! (Feature not yet implemented)`); }); }); });</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('nav ul li');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            alert(`Navigating to ${link.textContent}... (Feature not yet implemented)`);
+        });
+    });
+
+    const ctaButtons = document.querySelectorAll('main section button');
+    ctaButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            alert(`${button.textContent} clicked! (Feature not yet implemented)`);
+        });
+    });
+});
+</script>

@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>API Usage Dashboard</title><script src="https://cdn.tailwindcss.com"></script><style>
+body { scrollbar-width: thin; scrollbar-color: #3b82f6 #1f2937; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #1f2937; }
+::-webkit-scrollbar-thumb { background-color: #3b82f6; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background-color: #2563eb; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+</style>
+</head><body class="bg-gray-900 text-white font-sans"><div class="container mx-auto p-4"><h1 class="text-3xl font-bold mb-6">API Usage Dashboard</h1><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="bg-gray-800 p-5 rounded-lg shadow-md" title="Percentage of your API call limit that has been consumed."><h3 class="text-lg font-semibold mb-3">Current Usage</h3><p class="text-4xl font-bold">75%</p><div class="w-full bg-gray-700 rounded-full h-2.5 mt-3"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 75%"></div></div></div><div class="bg-gray-800 p-5 rounded-lg shadow-md" title="Total number of API requests remaining for the current period."><h3 class="text-lg font-semibold mb-3">Remaining Limits</h3><p class="text-4xl font-bold">1,500</p><p class="text-sm text-gray-400">Requests per day</p></div><div class="bg-gray-800 p-5 rounded-lg shadow-md" title="Average rate of API requests per minute over the last hour."><h3 class="text-lg font-semibold mb-3">Request Rate</h3><p class="text-4xl font-bold">120/min</p><p class="text-sm text-gray-400">Avg. last hour</p></div><div class="bg-gray-800 p-5 rounded-lg shadow-md" title="Percentage of API requests that resulted in an error in the last 24 hours."><h3 class="text-lg font-semibold mb-3">Errors</h3><p class="text-4xl font-bold text-red-500">1.2%</p><p class="text-sm text-gray-400">Last 24 hours</p></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 bg-gray-800 p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">API Activity & Limits</h3><canvas id="usageChart"></canvas></div><div class="bg-gray-800 p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Generate Report</h3><div class="mb-4"><label for="startDate" class="block text-sm font-medium text-gray-300">Start Date</label><input type="date" id="startDate" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"></div><div class="mb-4"><label for="endDate" class="block text-sm font-medium text-gray-300">End Date</label><input type="date" id="endDate" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"></div><button id="generateReportBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">Generate Report</button><div id="reportResult" class="mt-4 text-sm text-gray-400"></div></div></div></div></div><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script id="dashboard-script">const ctx = document.getElementById('usageChart').getContext('2d');
+const usageChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'API Requests',
+            data: [120, 190, 300, 500, 200, 350],
+            borderColor: '#3b82f6',
+            fill: false,
+            tension: 0.4
+        }, {
+            label: 'API Errors',
+            data: [5, 8, 12, 15, 10, 18],
+            borderColor: '#ef4444',
+            fill: false,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'API Usage Trends',
+                color: '#ffffff',
+                font: {
+                    size: 18
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                titleColor: '#ffffff',
+                bodyColor: '#d1d5db',
+                borderColor: '#4b5563',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#d1d5db'
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)'
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#d1d5db'
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)'
+                }
+            }
+        }
+    }
+});
+
+document.getElementById('generateReportBtn').addEventListener('click', () => {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reportResultDiv = document.getElementById('reportResult');
+
+    if (!startDate || !endDate) {
+        reportResultDiv.textContent = 'Please select both start and end dates.';
+        reportResultDiv.style.color = '#ef4444';
+        return;
+    }
+
+    reportResultDiv.textContent = `Generating report from ${startDate} to ${endDate}...`;
+    reportResultDiv.style.color = '#60a5fa';
+
+    // Simulate report generation
+    setTimeout(() => {
+        reportResultDiv.textContent = `Report for ${startDate} to ${endDate} generated successfully. (Dummy Data)`;
+        reportResultDiv.style.color = '#10b981';
+        // In a real application, you would fetch data or generate a file here
+    }, 1500);
+});
+</script><script>
+const ctx = document.getElementById('usageChart').getContext('2d');
+const usageChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'API Requests',
+            data: [120, 190, 300, 500, 200, 350],
+            borderColor: '#3b82f6',
+            fill: false,
+            tension: 0.4
+        }, {
+            label: 'API Errors',
+            data: [5, 8, 12, 15, 10, 18],
+            borderColor: '#ef4444',
+            fill: false,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'API Usage Trends',
+                color: '#ffffff',
+                font: {
+                    size: 18
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                titleColor: '#ffffff',
+                bodyColor: '#d1d5db',
+                borderColor: '#4b5563',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#d1d5db'
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)'
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#d1d5db'
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)'
+                }
+            }
+        }
+    }
+});
+
+document.getElementById('generateReportBtn').addEventListener('click', () => {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reportResultDiv = document.getElementById('reportResult');
+
+    if (!startDate || !endDate) {
+        reportResultDiv.textContent = 'Please select both start and end dates.';
+        reportResultDiv.style.color = '#ef4444';
+        return;
+    }
+
+    reportResultDiv.textContent = `Generating report from ${startDate} to ${endDate}...`;
+    reportResultDiv.style.color = '#60a5fa';
+
+    // Simulate report generation
+    setTimeout(() => {
+        reportResultDiv.textContent = `Report for ${startDate} to ${endDate} generated successfully. (Dummy Data)`;
+        reportResultDiv.style.color = '#10b981';
+        // In a real application, you would fetch data or generate a file here
+    }, 1500);
+});
+
+</script>
+</body></html>

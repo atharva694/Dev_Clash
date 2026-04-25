@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Narhe Homemade Delights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-radio {
+    accent-color: #3b82f6; /* Tailwind's blue-500 */
+}
+
+.addToCart, #checkout-btn, #place-order-btn {
+    transition: background-color 0.2s ease;
+}
+
+.remove-item {
+    transition: background-color 0.2s ease;
+}
+
+#map-placeholder {
+    background-image: url('https://via.placeholder.com/800x400/374151/9ca3af?text=Interactive+Map+Area');
+    background-size: cover;
+    background-position: center;
+}
+
+</style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <header class="bg-gray-800 p-4 shadow-md">
+        <h1 class="text-2xl font-bold text-center">Narhe Homemade Delights</h1>
+    </header>
+    <main class="container mx-auto p-4">
+        <section id="menu" class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Our Delicious Homemade Food</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <img src="https://via.placeholder.com/300x200/4b5563/ffffff?text=Dal+Makhani" alt="Dal Makhani" class="w-full h-48 object-cover rounded-t-lg">
+                    <h3 class="text-lg font-bold mt-2">Dal Makhani</h3>
+                    <p class="text-gray-300">Creamy lentil dish, slow-cooked to perfection.</p>
+                    <p class="text-lg font-semibold text-green-400">₹150</p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md mt-3 w-full addToCart">Add to Cart</button>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <img src="https://via.placeholder.com/300x200/4b5563/ffffff?text=Paneer+Tikka" alt="Paneer Tikka" class="w-full h-48 object-cover rounded-t-lg">
+                    <h3 class="text-lg font-bold mt-2">Paneer Tikka</h3>
+                    <p class="text-gray-300">Spiced cottage cheese cubes, grilled to smoky perfection.</p>
+                    <p class="text-lg font-semibold text-green-400">₹180</p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md mt-3 w-full addToCart">Add to Cart</button>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <img src="https://via.placeholder.com/300x200/4b5563/ffffff?text=Chicken+Biryani" alt="Chicken Biryani" class="w-full h-48 object-cover rounded-t-lg">
+                    <h3 class="text-lg font-bold mt-2">Chicken Biryani</h3>
+                    <p class="text-gray-300">Aromatic rice dish with tender chicken and spices.</p>
+                    <p class="text-lg font-semibold text-green-400">₹250</p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md mt-3 w-full addToCart">Add to Cart</button>
+                </div>
+                 <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <img src="https://via.placeholder.com/300x200/4b5563/ffffff?text=Aloo+Gobi" alt="Aloo Gobi" class="w-full h-48 object-cover rounded-t-lg">
+                    <h3 class="text-lg font-bold mt-2">Aloo Gobi</h3>
+                    <p class="text-gray-300">Potatoes and cauliflower sautéed with Indian spices.</p>
+                    <p class="text-lg font-semibold text-green-400">₹120</p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md mt-3 w-full addToCart">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+        <section id="cart" class="mb-8 bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Your Cart</h2>
+            <ul id="cart-items" class="space-y-3">
+                <!-- Cart items will be added here -->
+                <li class="flex justify-between items-center bg-gray-700 p-3 rounded">
+                    <span class="font-medium">Dal Makhani</span>
+                    <span class="font-medium">₹150</span>
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm remove-item">Remove</button>
+                </li>
+            </ul>
+            <div class="mt-4 flex justify-between items-center font-bold text-lg">
+                <span>Total:</span>
+                <span id="cart-total">₹150</span>
+            </div>
+            <button id="checkout-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md mt-5 w-full">Proceed to Checkout</button>
+        </section>
+        <section id="checkout" class="hidden bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Checkout</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="address" class="block text-sm font-medium mb-1">Delivery Address (Narhe Area)</label>
+                    <input type="text" id="address" class="w-full p-3 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your full address in Narhe">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Payment Method</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="payment" value="cod" checked class="form-radio text-blue-500 bg-gray-700 border-gray-600 focus:ring-blue-500">
+                            <span class="ml-2">Cash on Delivery</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="place-order-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md w-full">Place Order</button>
+            </div>
+        </section>
+        <section id="order-tracking" class="hidden bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Order Tracking</h2>
+            <div id="map-placeholder" class="w-full h-64 bg-gray-700 rounded-md flex items-center justify-center text-gray-400">
+                Loading map...
+            </div>
+            <p class="mt-4">Your order is currently with the delivery agent.</p>
+            <p>Estimated Delivery Time: <span id="eta">30 minutes</span></p>
+        </section>
+    </main>
+    <footer class="text-center p-4 mt-8 text-gray-500">
+        © 2023 Narhe Homemade Delights. Serving the Narhe area.
+    </footer>
+    <script src="app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartTotalElement = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const checkoutSection = document.getElementById('checkout');
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    const orderTrackingSection = document.getElementById('order-tracking');
+    const menuSection = document.getElementById('menu');
+    const cartSection = document.getElementById('cart');
+
+    let cart = [];
+
+    function updateCartDisplay() {
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<li class="text-gray-400 italic">Your cart is empty.</li>';
+        } else {
+            cart.forEach((item, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'flex justify-between items-center bg-gray-700 p-3 rounded';
+                listItem.innerHTML = `
+                    <span class="font-medium">${item.name}</span>
+                    <span class="font-medium">₹${item.price}</span>
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm remove-item" data-index="${index}">Remove</button>
+                `;
+                cartItemsContainer.appendChild(listItem);
+                total += item.price;
+            });
+        }
+        cartTotalElement.textContent = `₹${total}`;
+    }
+
+    document.querySelectorAll('.addToCart').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const card = e.target.closest('.bg-gray-800');
+            const name = card.querySelector('h3').textContent;
+            const price = parseFloat(card.querySelector('.font-semibold.text-green-400').textContent.replace('₹', ''));
+            cart.push({ name, price });
+            updateCartDisplay();
+            // Simple feedback
+            e.target.textContent = 'Added!';
+            setTimeout(() => {
+                e.target.textContent = 'Add to Cart';
+            }, 1500);
+        });
+    });
+
+    cartItemsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-item')) {
+            const indexToRemove = parseInt(e.target.dataset.index);
+            cart.splice(indexToRemove, 1);
+            updateCartDisplay();
+        }
+    });
+
+    checkoutBtn.addEventListener('click', () => {
+        menuSection.classList.add('hidden');
+        cartSection.classList.add('hidden');
+        checkoutSection.classList.remove('hidden');
+        checkoutBtn.classList.add('hidden');
+    });
+
+    placeOrderBtn.addEventListener('click', () => {
+        const address = document.getElementById('address').value;
+        if (!address.trim()) {
+            alert('Please enter your delivery address.');
+            return;
+        }
+        
+        // Simulate order placement
+        checkoutSection.classList.add('hidden');
+        orderTrackingSection.classList.remove('hidden');
+        
+        // Simulate map loading and update ETA
+        setTimeout(() => {
+            document.getElementById('map-placeholder').innerHTML = '<p class="text-lg font-semibold">Map loaded! Your order is on its way.</p>';
+            const randomMinutes = Math.floor(Math.random() * 20) + 20; // 20-40 minutes
+            document.getElementById('eta').textContent = `${randomMinutes} minutes`;
+        }, 2000);
+    });
+
+    updateCartDisplay(); // Initialize cart display
+});
+
+</script>
+</body>
+</html>
