@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import concurrent.futures
 from pathlib import Path
 from google import genai
 from dotenv import load_dotenv
@@ -87,32 +88,31 @@ def with_key_rotation(operation, preferred_model="gemini-3-flash-preview"):
     last_error = None
 
     for model_name in models_to_try:
-        print(f"\n--- Trying model: {model_name} ---")
-        for i, client in enumerate(clients):
-            try:
-                print(f"  Key {i + 1}...")
-                result = _call_with_backoff(operation, client, model_name)
-                print(f"  ✅ Key {i + 1} + {model_name} succeeded!")
-                return result
-            except Exception as e:
-                err = str(e)
-                print(f"  ❌ Key {i + 1} failed: {err[:120]}")
-                last_error = e
-
-                # 404 = model not found → skip all remaining keys, try next model
-                if "404" in err:
-                    print(f"  Model {model_name} unavailable. Trying next model...")
-                    break
-
-                # 429 = rate limited → try next key immediately
-                if "429" in err:
-                    print(f"  Rate limited. Trying next key...")
-                    continue
-
-                # 503 already retried inside _call_with_backoff → try next key
-                if _is_retryable(err):
-                    print(f"  Still overloaded after {_MAX_RETRIES} retries. Trying next key...")
-                    continue
+        print(f"\n--- 🏎️ Racing {len(clients)} keys on model: {model_name} ---")
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(clients)) as executor:
+            future_to_client = {
+                executor.submit(_call_with_backoff, operation, client, model_name): i 
+                for i, client in enumerate(clients)
+            }
+            
+            # as_completed yields futures as soon as they finish
+            for future in concurrent.futures.as_completed(future_to_client):
+                client_idx = future_to_client[future]
+                try:
+                    result = future.result()
+                    print(f"  🏆 WINNER: Key {client_idx + 1} finished first!")
+                    # Return immediately! The fastest response wins.
+                    # Other threads will complete in the background and their results discarded.
+                    return result
+                except Exception as e:
+                    err = str(e)
+                    last_error = e
+                    print(f"  ❌ Key {client_idx + 1} failed: {err[:120]}")
+                    
+                    if "404" in err:
+                        print(f"  Model {model_name} unavailable. Trying next model...")
+                        break # break the as_completed loop to switch to the next model
 
     raise ValueError(
         f"All {len(clients)} key(s) and {len(models_to_try)} model(s) failed. "

@@ -2,6 +2,7 @@
 
 import { GenerateResponse } from "@/lib/types";
 import { Download } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface DownloadButtonProps {
   code: GenerateResponse;
@@ -38,12 +39,14 @@ export function DownloadButton({ code }: DownloadButtonProps) {
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(16,185,129,0.4)" }}
+      whileTap={{ scale: 0.95 }}
       onClick={handleDownload}
-      className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-emerald-900/20"
+      className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/30 cursor-pointer text-sm"
     >
       <Download className="w-4 h-4" />
       Download Files
-    </button>
+    </motion.button>
   );
 }
