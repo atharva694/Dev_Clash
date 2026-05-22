@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { TopBar } from "@/components/TopBar";
 import { PromptInput } from "@/components/PromptInput";
 import { ProjectsGallery } from "@/components/ProjectsGallery";
+import { HistoryGallery } from "@/components/HistoryGallery";
 import { LivePreview } from "@/components/LivePreview";
 import { CodeView } from "@/components/CodeView";
 import { DownloadButton } from "@/components/DownloadButton";
@@ -13,7 +14,7 @@ import { ArrowLeft, Wand2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<"generator" | "projects">("generator");
+  const [currentView, setCurrentView] = useState<"generator" | "projects" | "history">("generator");
   const [appState, setAppState] = useState<AppState>("idle");
   const [generatedCode, setGeneratedCode] = useState<GenerateResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -64,7 +65,18 @@ export default function Home() {
         <TopBar />
 
         <AnimatePresence mode="wait">
-          {currentView === "projects" ? (
+          {currentView === "history" ? (
+            <motion.div
+              key="history"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="flex-1"
+            >
+              <HistoryGallery />
+            </motion.div>
+          ) : currentView === "projects" ? (
             <motion.div
               key="projects"
               initial={{ opacity: 0, y: 20 }}

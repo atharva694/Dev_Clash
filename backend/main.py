@@ -11,6 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import json
+import time
 
 from agents.client import with_key_rotation
 
@@ -89,6 +91,19 @@ def save_frontend(app_id: str, html: str, css: str, js: str) -> str:
     url = f"{get_base_url()}/generated/{app_id}/index.html"
     print(f"🌐 Frontend → {url}")
     return url
+
+
+def save_metadata(app_id: str, prompt: str, live_url: str, download_url: str):
+    app_dir = GENERATED_DIR / app_id
+    app_dir.mkdir(parents=True, exist_ok=True)
+    metadata = {
+        "id": app_id,
+        "prompt": prompt,
+        "live_url": live_url,
+        "download_url": download_url,
+        "timestamp": time.time()
+    }
+    (app_dir / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
 
 
 def build_zip(app_id: str, html: str, css: str, js: str, backend: dict) -> str:
@@ -251,6 +266,9 @@ def generate(req: GenerateRequest):
         print(f"[{app_id}] Step 4: Building project.zip...")
         download_url = build_zip(app_id, html, css, js, backend)
 
+        # ── Step 6: Save metadata for history ─────────────────────────────────
+        save_metadata(app_id, req.prompt, live_url, download_url)
+
         print("=" * 60)
         print(f"[{app_id}] Done! Total API calls: {1 + len(review_log) + 1}")
 
@@ -353,6 +371,9 @@ def refine(req: RefineRequest):
         print(f"[{app_id}] Step 4: Building project.zip...")
         download_url = build_zip(app_id, html, css, js, backend)
 
+        # ── Step 6: Save metadata for history ─────────────────────────────────
+        save_metadata(app_id, req.feedback + " (Refinement)", live_url, download_url)
+
         print("=" * 60)
         print(f"[{app_id}] Done! Total API calls: {1 + len(review_log) + 1}")
 
@@ -397,11 +418,23 @@ def list_projects():
     if GENERATED_DIR.exists():
         for d in GENERATED_DIR.iterdir():
             if d.is_dir() and (d / "index.html").exists():
+                meta_file = d / "metadata.json"
+                if meta_file.exists():
+                    try:
+                        meta = json.loads(meta_file.read_text(encoding="utf-8"))
+                        projects.append(meta)
+                        continue
+                    except:
+                        pass
                 projects.append({
                     "id": d.name,
+                    "prompt": "Generated Application",
                     "url": f"{get_base_url()}/generated/{d.name}/index.html",
-                    "download_url": f"{get_base_url()}/zips/{d.name}.zip"
+                    "download_url": f"{get_base_url()}/zips/{d.name}.zip",
+                    "timestamp": 0
                 })
+    # Sort by timestamp descending
+    projects.sort(key=lambda x: x.get("timestamp", 0), reverse=True)
     return {"projects": projects}
 
 
@@ -461,4 +494,8 @@ async def transcribe_audio(audio: UploadFile = File(...)):
     except Exception as e:
         print(f"[TRANSCRIBE ERROR] {str(e)}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

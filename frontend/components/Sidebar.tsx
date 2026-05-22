@@ -2,8 +2,8 @@ import { Home, Code2, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface SidebarProps {
-  currentView?: "generator" | "projects";
-  setCurrentView?: (view: "generator" | "projects") => void;
+  currentView?: "generator" | "projects" | "history";
+  setCurrentView?: (view: "generator" | "projects" | "history") => void;
 }
 
 export function Sidebar({ currentView = "generator", setCurrentView }: SidebarProps) {
@@ -24,6 +24,12 @@ export function Sidebar({ currentView = "generator", setCurrentView }: SidebarPr
             label="Home" 
             active={currentView === "generator"} 
             onClick={() => setCurrentView?.("generator")}
+          />
+          <NavItem 
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            label="History" 
+            active={currentView === "history"} 
+            onClick={() => setCurrentView?.("history")}
           />
           <NavItem 
             icon={<Code2 className="w-4 h-4"/>} 
