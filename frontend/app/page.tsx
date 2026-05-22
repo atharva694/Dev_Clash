@@ -4,13 +4,14 @@ import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { TopBar } from "@/components/TopBar";
 import { PromptInput } from "@/components/PromptInput";
+import { Questionnaire } from "@/components/Questionnaire";
 import { ProjectsGallery } from "@/components/ProjectsGallery";
 import { HistoryGallery } from "@/components/HistoryGallery";
 import { LivePreview } from "@/components/LivePreview";
 import { CodeView } from "@/components/CodeView";
 import { DownloadButton } from "@/components/DownloadButton";
 import { GenerateResponse, AppState } from "@/lib/types";
-import { ArrowLeft, Wand2, Sparkles } from "lucide-react";
+import { ArrowLeft, Wand2, Sparkles, Code2, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
@@ -18,6 +19,47 @@ export default function Home() {
   const [appState, setAppState] = useState<AppState>("idle");
   const [generatedCode, setGeneratedCode] = useState<GenerateResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showCode, setShowCode] = useState(false);
+  const [refinePrompt, setRefinePrompt] = useState("");
+  const [initialPrompt, setInitialPrompt] = useState("");
+  const [clarifyQuestions, setClarifyQuestions] = useState<string[]>([]);
+
+  const handleInitialSubmit = async (prompt: string) => {
+    setAppState("loading");
+    setErrorMsg(null);
+    setInitialPrompt(prompt);
+
+    try {
+      const response = await fetch("/api/clarify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to clarify. Please ensure the backend server is running.");
+      }
+
+      const data = await response.json();
+      if (data.questions && data.questions.length > 0) {
+        setClarifyQuestions(data.questions);
+        setAppState("clarifying");
+      } else {
+        handleGenerate(prompt);
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "An unexpected error occurred.");
+      setAppState("error");
+    }
+  };
+
+  const handleQuestionnaireComplete = (answers: Record<string, string>) => {
+    let finalPrompt = `Original Request:\n${initialPrompt}\n\nClarifications:\n`;
+    for (const [q, a] of Object.entries(answers)) {
+      finalPrompt += `Q: ${q}\nA: ${a}\n\n`;
+    }
+    handleGenerate(finalPrompt);
+  };
 
   const handleGenerate = async (prompt: string) => {
     setAppState("loading");
@@ -38,6 +80,37 @@ export default function Home() {
       const data: GenerateResponse = await response.json();
       setGeneratedCode(data);
       setAppState("success");
+    } catch (err: any) {
+      setErrorMsg(err.message || "An unexpected error occurred.");
+      setAppState("error");
+    }
+  };
+
+  const handleRefine = async () => {
+    if (!refinePrompt.trim() || !generatedCode) return;
+    setAppState("loading");
+    setErrorMsg(null);
+    try {
+      const response = await fetch("/api/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feedback: refinePrompt,
+          html_content: generatedCode.html_content,
+          css_content: generatedCode.css_content,
+          js_content: generatedCode.js_content,
+          optimized_prompt: generatedCode.optimized_prompt,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to refine application. Please ensure the backend server is running.");
+      }
+
+      const data: GenerateResponse = await response.json();
+      setGeneratedCode(data);
+      setAppState("success");
+      setRefinePrompt("");
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred.");
       setAppState("error");
@@ -131,7 +204,7 @@ export default function Home() {
                       transition={{ delay: 0.4, duration: 0.5 }}
                       className="w-full"
                     >
-                      <PromptInput onSubmit={handleGenerate} isLoading={appState === "loading"} />
+                      <PromptInput onSubmit={handleInitialSubmit} isLoading={appState === "loading"} />
                     </motion.div>
 
                     {appState === "error" && (
@@ -163,6 +236,17 @@ export default function Home() {
                       </motion.div>
                     )}
                   </motion.div>
+                ) : appState === "clarifying" ? (
+                  <motion.div
+                    key="clarify-view"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full -mt-12"
+                  >
+                    <Questionnaire questions={clarifyQuestions} onComplete={handleQuestionnaireComplete} />
+                  </motion.div>
                 ) : (
                   <motion.div 
                     key="result-view"
@@ -185,11 +269,18 @@ export default function Home() {
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
                           Generation Complete
                         </span>
+                        <button
+                          onClick={() => setShowCode(!showCode)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-sm font-semibold text-white transition-all shadow-lg shadow-cyan-900/30 cursor-pointer"
+                        >
+                          <Code2 className="w-4 h-4" />
+                          {showCode ? "Hide Code" : "View Code"}
+                        </button>
                         <DownloadButton code={generatedCode!} />
                       </div>
                     </div>
 
-                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
+                    <div className={`flex-1 grid ${showCode ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"} gap-6 min-h-[600px]`}>
                       <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -200,26 +291,51 @@ export default function Home() {
                           <span className="w-4 h-4 rounded bg-violet-500/20 flex items-center justify-center text-violet-400 text-[10px]">1</span>
                           Live Preview
                         </h3>
-                        <div className="flex-1 bg-[#0F172A]/50 border border-white/5 rounded-2xl overflow-hidden shadow-2xl relative group p-1 backdrop-blur-sm">
+                        <div className="flex-1 bg-[#0F172A]/50 border border-white/5 rounded-2xl overflow-hidden shadow-2xl relative group p-1 backdrop-blur-sm flex flex-col">
                           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                          {generatedCode && <LivePreview code={generatedCode} />}
+                          <div className="flex-1 relative rounded-xl overflow-hidden">
+                            {generatedCode && <LivePreview code={generatedCode} />}
+                          </div>
+                          
+                          <div className="mt-4 flex gap-2 items-center bg-[#0B0F19] p-2 rounded-xl border border-white/5">
+                            <input
+                              type="text"
+                              value={refinePrompt}
+                              onChange={(e) => setRefinePrompt(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleRefine();
+                              }}
+                              placeholder="Tell AI to edit something (e.g. Make the button blue)..."
+                              className="flex-1 bg-transparent border-none px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
+                            />
+                            <button
+                              onClick={handleRefine}
+                              disabled={!refinePrompt.trim() || appState === "loading"}
+                              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white rounded-lg text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                            >
+                              <Send className="w-4 h-4" />
+                              Refine
+                            </button>
+                          </div>
                         </div>
                       </motion.div>
 
-                      <motion.div 
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="flex flex-col gap-2 h-full"
-                      >
-                        <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2 ml-1">
-                          <span className="w-4 h-4 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-[10px]">2</span>
-                          Source Code
-                        </h3>
-                        <div className="flex-1 bg-[#0F172A] border border-white/5 rounded-2xl overflow-hidden shadow-2xl relative group p-1 backdrop-blur-sm">
-                          {generatedCode && <CodeView code={generatedCode} />}
-                        </div>
-                      </motion.div>
+                      {showCode && (
+                        <motion.div 
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="flex flex-col gap-2 h-full"
+                        >
+                          <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2 ml-1">
+                            <span className="w-4 h-4 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-[10px]">2</span>
+                            Source Code
+                          </h3>
+                          <div className="flex-1 bg-[#0F172A] border border-white/5 rounded-2xl overflow-hidden shadow-2xl relative group p-1 backdrop-blur-sm">
+                            {generatedCode && <CodeView code={generatedCode} />}
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   </motion.div>
                 )}
